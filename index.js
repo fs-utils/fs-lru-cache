@@ -32,11 +32,7 @@ function Cache(name, options) {
 
   var reaper = this.reaper = new Reaper()
   reaper.watch(this.tmpdir)
-  reaper.maxAge(Infinity)
   reaper.maxAccessedAge(maxage)
-  setImmediate(function () {
-    reaper.run()
-  })
   reaper.timeoutid = setInterval(function () {
     reaper.run()
   }, interval)
