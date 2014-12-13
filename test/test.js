@@ -5,7 +5,7 @@ var fs = require('fs')
 var Cache = require('..')
 
 var cache = new Cache({
-  interval: 1
+  interval: 10
 })
 
 it('.set() a value', function () {
