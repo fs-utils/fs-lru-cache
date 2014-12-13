@@ -25,9 +25,8 @@ function Cache(name, options) {
   this.tmpdir = path.join(tmpdir, 'fs-lru-cache', name || random())
   mkdirpSync(this.tmpdir)
 
-  var maxage = options.maxage || '30m'
+  var maxage = options.maxage || options.maxAge || '30m'
   var interval = options.interval || '30m'
-  if (typeof maxage === 'string') maxage = ms(maxage)
   if (typeof interval === 'string') interval = ms(interval)
 
   var reaper = this.reaper = new Reaper()
