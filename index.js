@@ -1,9 +1,9 @@
 
 var Promise = require('native-or-bluebird')
+var exec = require('child_process').exec
 var mkdirpSync = require('mkdirp').sync
 var mkdirp = require('mkdirp-then')
 var rimraf = require('rimraf-then')
-var Reaper = require('fs-reap')
 var path = require('path')
 var fs = require('mz/fs')
 var cp = require('fs-cp')
@@ -22,19 +22,25 @@ function Cache(name, options) {
     name = null
   }
 
-  this.tmpdir = path.join(tmpdir, 'fs-lru-cache', name || random())
+  var folder = this.tmpdir = path.join(tmpdir, 'fs-lru-cache', name || random())
   mkdirpSync(this.tmpdir)
 
   var maxage = options.maxage || options.maxAge || '30m'
+  if (typeof maxage === 'string') maxage = ms(maxage)
   var interval = options.interval || '30m'
   if (typeof interval === 'string') interval = ms(interval)
+  // in minutes
+  maxage = Math.round(maxage / 1000 / 1000)
 
-  var reaper = this.reaper = new Reaper()
-  reaper.watch(this.tmpdir)
-  reaper.maxAccessedAge(maxage)
-  reaper.timeoutid = setInterval(function () {
-    reaper.run()
-  }, interval)
+  this.interval_id = setInterval(cleanup)
+  cleanup()
+  function cleanup() {
+    exec('find "' + folder
+      + '" -mmin +' + maxage
+      + ' -type f -delete;', function (err) {
+      if (err) console.error(err.stack)
+    })
+  }
 }
 
 /**
