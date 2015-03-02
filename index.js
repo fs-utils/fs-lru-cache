@@ -23,7 +23,7 @@ function Cache(name, options) {
   }
 
   var folder = this.tmpdir = path.join(tmpdir, 'fs-lru-cache', name || random())
-  mkdirpSync(this.tmpdir)
+  mkdirpSync(folder)
 
   var maxage = options.maxage || options.maxAge || '30m'
   if (typeof maxage === 'string') maxage = ms(maxage)
