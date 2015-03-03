@@ -27,20 +27,16 @@ function Cache(name, options) {
 
   var maxage = options.maxage || options.maxAge || '30m'
   if (typeof maxage === 'string') maxage = ms(maxage)
+  this.maxage = maxage
   var interval = options.interval || '30m'
   if (typeof interval === 'string') interval = ms(interval)
-  // in minutes
-  maxage = Math.round(maxage / 1000 / 1000)
+  this.interval = interval
 
-  this.interval_id = setInterval(cleanup)
-  cleanup()
-  function cleanup() {
-    exec('find "' + folder
-      + '" -mmin +' + maxage
-      + ' -type f -delete;', function (err) {
-      if (err) console.error(err.stack)
-    })
-  }
+  var self = this
+  this.interval_id = setInterval(function () {
+    self.reap()
+  })
+  self.reap()
 }
 
 /**
@@ -56,6 +52,20 @@ Cache.prototype.defineGetter = function (fn) {
 
 Cache.prototype.defineSetter = function (fn) {
   this._set = fn
+}
+
+/**
+ * Delete all old data.
+ */
+
+Cache.prototype.reap = function () {
+  exec('find "' + this.tmpdir
+    + '" -mmin +' + Math.round(this.maxage / 1000 / 1000)
+    + ' -type f -delete;', /* istanbul ignore next */ function (err) {
+    if (!err) return
+    if (~err.message.indexOf('No such file or directory')) return
+    console.error(err.stack)
+  })
 }
 
 /**
