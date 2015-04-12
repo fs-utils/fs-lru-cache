@@ -35,7 +35,7 @@ function Cache(name, options) {
   var self = this
   this.interval_id = setInterval(function () {
     self.reap()
-  })
+  }, interval)
   self.reap()
 }
 
