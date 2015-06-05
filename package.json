@@ -10,7 +10,7 @@
     "mkdirp": "0",
     "mkdirp-then": "^1.0.1",
     "ms": "0",
-    "mz": "^1.1.0",
+    "mz": "^2.0.0",
     "native-or-bluebird": "^1.1.2",
     "rimraf": "^2.2.8",
     "rimraf-then": "^1.0.0"
